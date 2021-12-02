@@ -9,6 +9,8 @@ const express = require('express');
 const router  = express.Router();
 
 module.exports = (db) => {
+
+  // the home page with all users
   router.get("/", (req, res) => {
     db.query(`SELECT * FROM users;`)
       .then(data => {
@@ -21,5 +23,30 @@ module.exports = (db) => {
           .json({ error: err.message });
       });
   });
+
+  // The user homepage when they can see their quizzes
+  router.get("/:id", (req, res) => {
+    db.query(`SELECT users.id AS user_id, users.username, quizzes.id AS quiz_id, quizzes.title, quizzes.description, quizzes.public
+              from users JOIN quizzes on owner_id = users.id
+              WHERE owner_id = $1
+              GROUP BY users.id, users.username, quizzes.id, quizzes.title, quizzes.description, quizzes.public;`, 
+              [req.params.id])
+      .then(user => {
+        const templateVar = {userInfo: user.rows, user_id: req.params.id};
+        res.render("../views/users", templateVar);
+      })
+      .catch(err => {
+        res
+          .status(500)
+          .json({ error: err.message });
+      });
+  });
+
+  
+
+
   return router;
 };
+
+
+
