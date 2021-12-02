@@ -1,4 +1,4 @@
-# User Stories
+## User Stories
 
 - [ ] As a logged-in user, I can create quizzes, because I want to test people.
 - [ ] As a logged-in user, I can make quizzes private, because I want to limit acces to my quizzes.
