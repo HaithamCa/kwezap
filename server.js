@@ -45,7 +45,7 @@ const widgetsRoutes = require("./routes/widgets");
 // Note: Feel free to replace the example routes below with your own
 app.use("/home", homeRoutes(db));
 app.use("/users", usersRoutes(db));
-app.use("/quizzes", quizRoutes(db));
+app.use("/quiz", quizRoutes(db));
 app.use("/widgets", widgetsRoutes(db));
 // Note: mount other resources here, using the same pattern above
 
