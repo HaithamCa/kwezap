@@ -10,7 +10,7 @@ const router  = express.Router();
 module.exports = (db) => {
 
   // quiz in it's page
-  router.get('/:quizId', (req, res) => {
+  router.get('/:quiz_id', (req, res) => {
     db.query(`
     SELECT username, owner_id, quizzes.title, questions.question, questions.quiz_id, answers.question_id, answers.answer, answers.is_correct
     FROM answers
@@ -19,9 +19,8 @@ module.exports = (db) => {
     JOIN users ON owner_id = users.id
     WHERE quiz_id = $1
     GROUP BY username, owner_id, question_id, quizzes.title, questions.question, answers.answer, questions.quiz_id, answers.is_correct, questions.id
-    ORDER BY questions.id;`, [req.params.quizId])
+    ORDER BY questions.id;`, [req.params.quiz_id])
       .then(data => {
-        
         const templateVar = { quizzes: data.rows };
         res.render('../views/quiz', templateVar)
       })
@@ -32,7 +31,15 @@ module.exports = (db) => {
       });
   });
 
-  
+  // adding a question after creating the quiz
+  router.get("/:quiz_id/questions", (req, res) => {
+    req.session = req.params.quiz_id;
+    db.query(`SELECT id, owner_id FROM quizzes WHERE id = $1`, [req.params.quiz_id])
+    .then(data => {
+      let templateVar = { quizId: req.params.quiz_id, user: data.rows[0] };
+      res.render('../views/questions', templateVar);
+    })
+  })
 
 
   return router;
