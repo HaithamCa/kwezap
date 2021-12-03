@@ -14,7 +14,20 @@
 </head>
 
 <body>
-  <h1>Have fun! 🥔</h1>
+  <div class="main-container">
+    <h1>Welcome to KWEZAP!</h1>
+    <h2>quizzes created by other users!</h2>
+    <div class="links-container">
+      <% for (let quiz of quizzes) {%>
+        <div class="quiz-link">
+          <%= quiz.title %>
+          <br>
+          <p><%= quiz.description %></p>
+        </div>
+      <br>
+      <%}%>
+    </div>
+  </div>
 </body>
 
 </html>
