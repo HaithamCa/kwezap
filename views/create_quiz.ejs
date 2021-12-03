@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Home Page</title>
+
+  <link rel="stylesheet" href="/vendor/normalize-4.1.1.css" type="text/css" />
+  <link rel="stylesheet" href="/vendor/border-box.css" type="text/css" />
+  <link rel="stylesheet" href="/styles/main.css" type="text/css" />
+  <link rel="stylesheet" href="/styles/layout.css" type="text/css" />
+
+  <script type="text/javascript" src="/vendor/jquery-3.0.0.js"></script>
+  <script type="text/javascript" src="/scripts/app.js"></script>
+</head>
+
+<body>
+    <header>
+        <nav>
+          <a href="/home/<%= user_id %>">
+            <h1>KWEZAP</h1>
+          </a>
+          <a href="/users/<%= user_id %>">
+            <div class="create-quiz-link">
+              Your Quizzes!
+            </div>
+          </a>
+        </nav>
+      </header>
+      <div class="main-container">
+        <div id="create-quiz-cont">
+          <h1> Create Your Quiz!</h1>
+          <form id="create-quiz" method="POST" action="/users/<%= user_id %>/createquiz">
+            <label for="name">Quiz Title:</label>
+            <input id="quiz-title" type="text" name="name">
+            <br>
+            <label for="description"> Quiz Description:</label>
+            <input id="quiz-description" type="text" name="description">
+            <br>
+            <div class="privacy">
+              <input id="public" type="radio" name="public" value="true"> Make private?</input>
+              <input id="public" type="radio" name="public" value="false"> Make public?</input>
+              <br>
+            </div>
+            <button type="submit"> Add Question! </button>
+          </form>
+          <h2 class="error">Please complete the form before submitting.</h2>
+        </div>
+      </div>
+</body>
+
+</html>

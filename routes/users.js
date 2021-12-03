@@ -10,19 +10,19 @@ const router  = express.Router();
 
 module.exports = (db) => {
 
-  // the home page with all users
-  router.get("/", (req, res) => {
-    db.query(`SELECT * FROM users;`)
-      .then(data => {
-        const users = data.rows;
-        res.json({ users });
-      })
-      .catch(err => {
-        res
-          .status(500)
-          .json({ error: err.message });
-      });
-  });
+  // // the home page with all users
+  // router.get("/", (req, res) => {
+  //   db.query(`SELECT * FROM users;`)
+  //     .then(data => {
+  //       const users = data.rows;
+  //       res.json({ users });
+  //     })
+  //     .catch(err => {
+  //       res
+  //         .status(500)
+  //         .json({ error: err.message });
+  //     });
+  // });
 
   // The user homepage when they can see their quizzes
   router.get("/:id", (req, res) => {
@@ -41,6 +41,12 @@ module.exports = (db) => {
           .json({ error: err.message });
       });
   });
+
+  // creating a quiz page
+  router.get("/createquiz/:user_id", (req, res) => {
+    let templateVar = { user_id: req.params.user_id };
+    res.render('../views/create_quiz', templateVar);
+  })
 
   
 
