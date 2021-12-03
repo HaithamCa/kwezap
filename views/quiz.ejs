@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Home Page</title>
+
+  <link rel="stylesheet" href="/vendor/normalize-4.1.1.css" type="text/css" />
+  <link rel="stylesheet" href="/vendor/border-box.css" type="text/css" />
+  <link rel="stylesheet" href="/styles/main.css" type="text/css" />
+  <link rel="stylesheet" href="/styles/layout.css" type="text/css" />
+  <script type="text/javascript" src="/vendor/jquery-3.0.0.js"></script>
+  <script type="text/javascript" src="/scripts/app.js"></script>
+</head>
+
+<body>
+  
+    <div class="main-container">
+      <div class="quiz-inprog-cont">
+        <h1><%= quizzes[0].username %></h1>
+        <h2><%= quizzes[0].title %></h2>
+        <h3>All Questions</h3>
+        <div>
+          <% let questionText = ''; %>
+          <% for (let object of quizzes) { %>
+          <% if (object.question === questionText) { %>
+          <li><%= object.answer %></li>
+          <br>
+          <% } else {  %>
+          <% questionText = object.question %>
+          <h4><%= questionText %></h4>
+          <br>
+          <li><%= object.answer %></li>
+          <br>
+          <% } %>
+          <% } %>
+          <br>
+        </div>
+      </div>
+    </div>
+  </body>
+
+
+</html>

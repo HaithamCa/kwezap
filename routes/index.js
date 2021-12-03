@@ -9,17 +9,15 @@ const express = require('express');
 const router  = express.Router();
 
 module.exports = (db) => {
-  router.get("/", (req, res) => {
-    db.query(`SELECT * FROM users;`)
-      .then(data => {
-        const users = data.rows;
-        res.json({ users });
-      })
-      .catch(err => {
-        res
-          .status(500)
-          .json({ error: err.message });
+    router.get('/:user_id', (req, res) => {
+        req.session = req.params.user_id;
+        db.query(`
+        SELECT * FROM quizzes WHERE public = true;
+        `)
+        .then(data => {
+          const templateVar = {quizzes: data.rows, user_id: req.params.user_id};
+          res.render('../views/index', templateVar);
+        })
       });
-  });
-  return router;
-};
+      return router;
+    };

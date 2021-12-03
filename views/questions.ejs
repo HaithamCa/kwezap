@@ -2,32 +2,26 @@
 <html lang="en">
 
 <head>
-  <title>Home Page</title>
+  <title>Home</title>
 
   <link rel="stylesheet" href="/vendor/normalize-4.1.1.css" type="text/css" />
   <link rel="stylesheet" href="/vendor/border-box.css" type="text/css" />
   <link rel="stylesheet" href="/styles/main.css" type="text/css" />
   <link rel="stylesheet" href="/styles/layout.css" type="text/css" />
-
   <script type="text/javascript" src="/vendor/jquery-3.0.0.js"></script>
   <script type="text/javascript" src="/scripts/app.js"></script>
 </head>
 
 <body>
-  <div class="main-container">
-    <h1>Welcome to KWEZAP!</h1>
-    <h2>quizzes created by other users!</h2>
-    <div class="links-container">
-      <% for (let quiz of quizzes) {%>
-        <div class="quiz-link">
-          <%= quiz.title %>
-          <br>
-          <p><%= quiz.description %></p>
+    <div class="main-container">
+        <div class="create-question-cont">
+          <h2> ADD Your Question!</h2>
+          <form id="quiz-question" method="POST" action="/quiz/<%= quizId %>/questions">
+            <label for="question">Your Question:</label>
+            <input id="question-text" type="text" name="question">
+            <button type="submit"> Add </button>
+          </form>
         </div>
-      <br>
-      <%}%>
-    </div>
-  </div>
-</body>
-
+      </div>
+  </body>
 </html>
