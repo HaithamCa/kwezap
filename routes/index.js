@@ -10,7 +10,7 @@ const router  = express.Router();
 
 module.exports = (db) => {
     router.get('/:user_id', (req, res) => {
-        req.session = req.params.user_id;
+        req.session.user_id = req.params.user_id;
         db.query(`
         SELECT * FROM quizzes WHERE public = true;
         `)
