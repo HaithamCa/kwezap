@@ -49,7 +49,7 @@ module.exports = (db) => {
   });
 
   // storing created quizzes into the database
-  router.post("/createquiz/:user_id", (req, res) => {
+  router.post("/:user_id/createquiz", (req, res) => {
     let queryString = `INSERT INTO quizzes (owner_id, title, description, public)
                 VALUES ($1, $2, $3, $4) RETURNING id;`;
     let values = [req.params.user_id, req.body.title, req.body.description, req.body.public];
@@ -59,8 +59,8 @@ module.exports = (db) => {
         res.redirect(`/quiz/${quizId}/questions`);
       })
       .catch(err => {
-        const errMsg = 'Please complete the form.'
-        res.send(errMsg);
+        
+        res.send('Please complete the form.');
       });
   });
 
