@@ -1,7 +1,11 @@
-const STORAGE_KEY = "kwezap_portfolio_state_v1";
+const STORAGE_KEY = "kwezap_portfolio_state_v2";
 
 const DEFAULT_DATA = {
-  currentUser: { id: 1, username: "aenderwick0" },
+  currentUser: null, // Changed to null to require login
+  users: [
+    { id: 1, username: "aenderwick0", email: "demo@kwezap.com", password: "demo" },
+    { id: 2, username: "gtinn1", email: "user2@kwezap.com", password: "demo" },
+  ],
   quizzes: [
     {
       id: 101,
@@ -243,7 +247,7 @@ function renderHome() {
   app.innerHTML = `
     <div class="hero-card">
       <h1>Welcome to KWEZAP!</h1>
-      <p class="subtitle">Browse public quizzes created by the community, test yourself, or build your own quiz to share.</p>
+      <p class="subtitle">Browse public quizzes created by the community, test yourself, or ${state.currentUser ? 'build your own quiz' : 'login to create your own quizzes'}.</p>
     </div>
 
     <h2 class="section-title">Public Quizzes (${publicQuizzes.length})</h2>
@@ -272,9 +276,131 @@ function renderHome() {
   `;
 }
 
+function renderLogin() {
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <div class="form-card auth-card">
+      <h1>Login to KWEZAP</h1>
+      <p class="subtitle">Access your quizzes and create new ones</p>
+      <div id="login-error" class="alert-error" style="display: none;"></div>
+      
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" type="email" name="email" placeholder="demo@kwezap.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" type="password" name="password" placeholder="••••••••" required />
+        </div>
+
+        <button type="submit" class="btn primary full-width">Login</button>
+      </form>
+
+      <p class="auth-footer">
+        Don't have an account? <a href="#register">Register here</a><br>
+        <small>Demo: demo@kwezap.com / demo</small>
+      </p>
+    </div>
+  `;
+
+  document.getElementById("login-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const email = fd.get("email").toLowerCase().trim();
+    const password = fd.get("password");
+
+    const user = state.users.find((u) => u.email === email && u.password === password);
+    if (!user) {
+      const errorDiv = document.getElementById("login-error");
+      errorDiv.textContent = "Invalid email or password";
+      errorDiv.style.display = "block";
+      return;
+    }
+
+    state.currentUser = { id: user.id, username: user.username };
+    saveState(state);
+    window.location.hash = "#home";
+  });
+}
+
+function renderRegister() {
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <div class="form-card auth-card">
+      <h1>Join KWEZAP</h1>
+      <p class="subtitle">Create an account to build and share quizzes</p>
+      <div id="register-error" class="alert-error" style="display: none;"></div>
+      
+      <form id="register-form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input id="username" type="text" name="username" placeholder="Choose a username" required />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" type="email" name="email" placeholder="you@example.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" type="password" name="password" placeholder="At least 6 characters" required minlength="6" />
+        </div>
+
+        <div class="form-group">
+          <label for="password_confirm">Confirm Password</label>
+          <input id="password_confirm" type="password" name="password_confirm" placeholder="Re-enter password" required />
+        </div>
+
+        <button type="submit" class="btn primary full-width">Create Account</button>
+      </form>
+
+      <p class="auth-footer">
+        Already have an account? <a href="#login">Login here</a>
+      </p>
+    </div>
+  `;
+
+  document.getElementById("register-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const username = fd.get("username").trim();
+    const email = fd.get("email").toLowerCase().trim();
+    const password = fd.get("password");
+    const passwordConfirm = fd.get("password_confirm");
+    const errorDiv = document.getElementById("register-error");
+
+    if (password !== passwordConfirm) {
+      errorDiv.textContent = "Passwords do not match";
+      errorDiv.style.display = "block";
+      return;
+    }
+
+    if (state.users.find((u) => u.email === email)) {
+      errorDiv.textContent = "Email already registered";
+      errorDiv.style.display = "block";
+      return;
+    }
+
+    const newId = state.users.length + 1;
+    const newUser = { id: newId, username, email, password };
+    state.users.push(newUser);
+    state.currentUser = { id: newId, username };
+    saveState(state);
+    window.location.hash = "#home";
+  });
+}
+
 function renderDashboard() {
+  if (!state.currentUser) {
+    window.location.hash = "#login";
+    return;
+  }
+  
   const myQuizzes = state.quizzes.filter((q) => q.owner_id === state.currentUser.id);
-  const myAttempts = [...state.attempts].reverse();
+  const myAttempts = [...state.attempts].filter(a => a.user_id === state.currentUser.id).reverse();
   const app = document.getElementById("app");
 
   app.innerHTML = `
@@ -350,6 +476,11 @@ function renderDashboard() {
 }
 
 function renderCreateQuiz() {
+  if (!state.currentUser) {
+    window.location.hash = "#login";
+    return;
+  }
+  
   const app = document.getElementById("app");
   app.innerHTML = `
     <div class="form-card">
@@ -404,10 +535,20 @@ function renderCreateQuiz() {
 }
 
 function renderAddQuestion(quizId) {
+  if (!state.currentUser) {
+    window.location.hash = "#login";
+    return;
+  }
+  
   const quiz = state.quizzes.find((q) => q.id === Number(quizId));
   const app = document.getElementById("app");
   if (!quiz) {
     app.innerHTML = `<div class="empty-state"><p>Quiz not found.</p><a href="#home" class="btn primary">Back Home</a></div>`;
+    return;
+  }
+  
+  if (quiz.owner_id !== state.currentUser.id) {
+    app.innerHTML = `<div class="empty-state"><p>You don't have permission to edit this quiz.</p><a href="#home" class="btn primary">Back Home</a></div>`;
     return;
   }
 
@@ -538,6 +679,12 @@ function renderQuiz(quizId) {
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
+      
+      if (!state.currentUser) {
+        window.location.hash = "#login";
+        return;
+      }
+      
       const fd = new FormData(form);
       let score = 0;
       for (const q of quiz.questions) {
@@ -616,6 +763,10 @@ function router() {
   const hash = window.location.hash || "#home";
   if (hash === "#home" || hash === "") {
     renderHome();
+  } else if (hash === "#login") {
+    renderLogin();
+  } else if (hash === "#register") {
+    renderRegister();
   } else if (hash === "#dashboard") {
     renderDashboard();
   } else if (hash === "#create") {
@@ -640,9 +791,13 @@ document.addEventListener("click", (e) => {
 
   const toggleBtn = e.target.closest("[data-toggle-public]");
   if (toggleBtn) {
+    if (!state.currentUser) {
+      window.location.hash = "#login";
+      return;
+    }
     const id = Number(toggleBtn.getAttribute("data-toggle-public"));
     const quiz = state.quizzes.find((q) => q.id === id);
-    if (quiz) {
+    if (quiz && quiz.owner_id === state.currentUser.id) {
       quiz.public = !quiz.public;
       saveState(state);
       renderDashboard();
@@ -652,10 +807,24 @@ document.addEventListener("click", (e) => {
 
   const deleteBtn = e.target.closest("[data-delete-quiz]");
   if (deleteBtn) {
+    if (!state.currentUser) {
+      window.location.hash = "#login";
+      return;
+    }
     const id = Number(deleteBtn.getAttribute("data-delete-quiz"));
-    state.quizzes = state.quizzes.filter((q) => q.id !== id);
+    const quiz = state.quizzes.find((q) => q.id === id);
+    if (quiz && quiz.owner_id === state.currentUser.id) {
+      state.quizzes = state.quizzes.filter((q) => q.id !== id);
+      saveState(state);
+      renderDashboard();
+    }
+  }
+  
+  const logoutBtn = e.target.closest("[data-logout]");
+  if (logoutBtn) {
+    state.currentUser = null;
     saveState(state);
-    renderDashboard();
+    window.location.hash = "#home";
   }
 });
 

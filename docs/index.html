@@ -14,8 +14,7 @@
       <a href="#home" class="brand">KWEZAP</a>
       <div class="nav-links">
         <a href="#home" class="nav-btn">Explore Quizzes</a>
-        <a href="#dashboard" class="nav-btn">My Dashboard</a>
-        <a href="#create" class="nav-btn primary">+ Create Quiz</a>
+        <span id="nav-auth-links"></span>
       </div>
     </nav>
   </header>
@@ -24,6 +23,27 @@
 
   <div id="toast" class="toast" hidden>Copied link to clipboard!</div>
 
+  <script>
+    // Update nav bar dynamically based on auth state
+    function updateNav() {
+      const navAuth = document.getElementById('nav-auth-links');
+      const state = JSON.parse(localStorage.getItem('kwezap_portfolio_state_v2') || '{}');
+      if (state.currentUser) {
+        navAuth.innerHTML = `
+          <a href="#dashboard" class="nav-btn">My Dashboard</a>
+          <a href="#create" class="nav-btn primary">+ Create Quiz</a>
+          <button type="button" class="nav-btn logout-btn" data-logout>Logout (${state.currentUser.username})</button>
+        `;
+      } else {
+        navAuth.innerHTML = `
+          <a href="#login" class="nav-btn">Login</a>
+          <a href="#register" class="nav-btn primary">Register</a>
+        `;
+      }
+    }
+    updateNav();
+    window.addEventListener('hashchange', updateNav);
+  </script>
   <script src="./app.js"></script>
 </body>
 
