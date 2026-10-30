@@ -106,3 +106,10 @@ INSERT INTO answers (question_id, answer)
   (104, 'TRUE'),
   (105, 'FALSE'),
   (106, 'FALSE');
+
+UPDATE answers SET is_correct = TRUE;
+
+INSERT INTO answers (question_id, answer, is_correct)
+SELECT question_id, CASE WHEN answer = 'TRUE' THEN 'FALSE' ELSE 'TRUE' END, FALSE
+FROM answers;
+

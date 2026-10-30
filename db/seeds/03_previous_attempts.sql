@@ -25,3 +25,6 @@ VALUES
   (23,39),
   (24,35),
   (25,4);
+
+UPDATE previous_attempts SET score = 3 WHERE score IS NULL;
+
