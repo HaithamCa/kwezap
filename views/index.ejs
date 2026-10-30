@@ -2,7 +2,9 @@
 <html lang="en">
 
 <head>
-  <title>Home Page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KWEZAP — Home</title>
 
   <link rel="stylesheet" href="/vendor/normalize-4.1.1.css" type="text/css" />
   <link rel="stylesheet" href="/vendor/border-box.css" type="text/css" />
@@ -14,18 +16,41 @@
 </head>
 
 <body>
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="/home/<%= user_id || 1 %>" class="brand">KWEZAP</a>
+      <div class="nav-links">
+        <a href="/home/<%= user_id || 1 %>" class="nav-btn">Explore Quizzes</a>
+        <a href="/users/<%= user_id || 1 %>" class="nav-btn">My Dashboard</a>
+        <a href="/users/createquiz/<%= user_id || 1 %>" class="nav-btn primary">+ Create Quiz</a>
+      </div>
+    </nav>
+  </header>
+
   <div class="main-container">
-    <h1>Welcome to KWEZAP!</h1>
-    <h2>quizzes created by other users!</h2>
+    <div class="hero-card">
+      <h1>Welcome to KWEZAP!</h1>
+      <p class="subtitle">Browse public quizzes created by the community, test yourself, or build your own quiz to share.</p>
+    </div>
+
+    <h2 class="section-title">Public Quizzes (<%= quizzes.length %>)</h2>
     <div class="links-container">
-      <% for (let quiz of quizzes) {%>
-        <div class="quiz-link">
-          <%= quiz.title %>
-          <br>
-          <p><%= quiz.description %></p>
+      <% for (let quiz of quizzes) { %>
+        <div class="quiz-card">
+          <div class="quiz-card-body">
+            <div class="quiz-meta">
+              <span class="badge"><%= quiz.question_count || 0 %> Questions</span>
+              <span class="author">By @<%= quiz.username || ('User #' + quiz.owner_id) %></span>
+            </div>
+            <h3><a href="/quiz/<%= quiz.id %>"><%= quiz.title %></a></h3>
+            <p><%= quiz.description %></p>
+          </div>
+          <div class="quiz-card-actions">
+            <a href="/quiz/<%= quiz.id %>" class="btn primary">Take Quiz</a>
+            <button type="button" class="btn secondary copy-link-btn" data-url="/quiz/<%= quiz.id %>">Share Link</button>
+          </div>
         </div>
-      <br>
-      <%}%>
+      <% } %>
     </div>
   </div>
 </body>

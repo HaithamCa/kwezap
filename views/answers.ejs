@@ -2,7 +2,9 @@
 <html lang="en">
 
 <head>
-  <title>Home</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KWEZAP — Add Answers</title>
 
   <link rel="stylesheet" href="/vendor/normalize-4.1.1.css" type="text/css" />
   <link rel="stylesheet" href="/vendor/border-box.css" type="text/css" />
@@ -14,36 +16,65 @@
 </head>
 
 <body>
-    
-    <div class="main-container">
-      <div class="create-answers-cont">
-        <h1>Your question: <%= question.question %></h1>
-        <h3>Please provide four possible answers:</h3>
-        <form id="answers-form" method="POST" action="/questions/<%= question_id%>">
-          <label for="answer1">Answer 1</label>
-          <input id="textbox1" class="textbox" type="text" name="answer1">
-          <input type="radio" name="isCorrecta1" value="false">Is incorrect?</input>
-          <input type="radio" name="isCorrecta1" value="true">Is correct?</input>
-          <br>
-          <label for="answer2">Answer 2</label>
-          <input id="textbox2" class="textbox" type="text" name="answer2">
-          <input type="radio" name="isCorrecta2" value="false">Is incorrect?</input>
-          <input type="radio" name="isCorrecta2" value="true">Is correct?</input>
-          <br>
-          <label for="answer3">Answer 3</label>
-          <input id="textbox3" class="textbox" type="text" name="answer3">
-          <input type="radio" name="isCorrecta3" value="false">Is incorrect?</input>
-          <input type="radio" name="isCorrecta3" value="true">Is correct?</input>
-          <br />
-          <label for="answer4">Answer 4</label>
-          <input id="textbox4" class="textbox" type="text" name="answer4">
-          <input type="radio" name="isCorrecta4" value="false">Is incorrect?</input>
-          <input type="radio" name="isCorrecta4" value="true">Is correct?</input>
-          <br>
-          <button type="submit">Submit answers</button>
-        </form>
-        <h2 class="error">Please input all answers.</h2>
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="/home/<%= typeof user_id !== 'undefined' ? user_id : 1 %>" class="brand">KWEZAP</a>
+      <div class="nav-links">
+        <a href="/quiz/<%= quiz_id %>" class="nav-btn">View Quiz</a>
+        <a href="/users/<%= typeof user_id !== 'undefined' ? user_id : 1 %>" class="nav-btn">My Dashboard</a>
       </div>
+    </nav>
+  </header>
+
+  <div class="main-container">
+    <div class="form-card create-answers-cont">
+      <h2>Question: <%= question ? question.question : '' %></h2>
+      <p class="subtitle">Provide four possible answers and mark which one is correct.</p>
+
+      <form id="answers-form" method="POST" action="/questions/<%= question_id %>">
+        <div class="answer-builder-row">
+          <label for="textbox1">Answer 1</label>
+          <input id="textbox1" class="textbox" type="text" name="answer1" placeholder="Option 1 (Correct answer by default)" required />
+          <div class="radio-group-inline">
+            <label><input type="radio" name="isCorrecta1" value="true" checked /> Correct</label>
+            <label><input type="radio" name="isCorrecta1" value="false" /> Incorrect</label>
+          </div>
+        </div>
+
+        <div class="answer-builder-row">
+          <label for="textbox2">Answer 2</label>
+          <input id="textbox2" class="textbox" type="text" name="answer2" placeholder="Option 2" required />
+          <div class="radio-group-inline">
+            <label><input type="radio" name="isCorrecta2" value="true" /> Correct</label>
+            <label><input type="radio" name="isCorrecta2" value="false" checked /> Incorrect</label>
+          </div>
+        </div>
+
+        <div class="answer-builder-row">
+          <label for="textbox3">Answer 3</label>
+          <input id="textbox3" class="textbox" type="text" name="answer3" placeholder="Option 3" required />
+          <div class="radio-group-inline">
+            <label><input type="radio" name="isCorrecta3" value="true" /> Correct</label>
+            <label><input type="radio" name="isCorrecta3" value="false" checked /> Incorrect</label>
+          </div>
+        </div>
+
+        <div class="answer-builder-row">
+          <label for="textbox4">Answer 4</label>
+          <input id="textbox4" class="textbox" type="text" name="answer4" placeholder="Option 4" required />
+          <div class="radio-group-inline">
+            <label><input type="radio" name="isCorrecta4" value="true" /> Correct</label>
+            <label><input type="radio" name="isCorrecta4" value="false" checked /> Incorrect</label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" name="action" value="finish" class="btn primary">Save & View Quiz</button>
+          <button type="submit" name="action" value="add_another" class="btn secondary">Save & Add Another Question</button>
+        </div>
+      </form>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

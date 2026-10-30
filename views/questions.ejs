@@ -2,7 +2,9 @@
 <html lang="en">
 
 <head>
-  <title>Home</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KWEZAP — Add Question</title>
 
   <link rel="stylesheet" href="/vendor/normalize-4.1.1.css" type="text/css" />
   <link rel="stylesheet" href="/vendor/border-box.css" type="text/css" />
@@ -13,15 +15,36 @@
 </head>
 
 <body>
-    <div class="main-container">
-        <div class="create-question-cont">
-          <h2> ADD Your Question!</h2>
-          <form id="quiz-question" method="POST" action="/quiz/<%= quizId %>/questions">
-            <label for="question">Your Question:</label>
-            <input id="question-text" type="text" name="question">
-            <button type="submit"> Add </button>
-          </form>
-        </div>
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="/home/<%= typeof user_id !== 'undefined' ? user_id : 1 %>" class="brand">KWEZAP</a>
+      <div class="nav-links">
+        <a href="/quiz/<%= quizId %>" class="nav-btn">View Quiz</a>
+        <a href="/users/<%= typeof user_id !== 'undefined' ? user_id : 1 %>" class="nav-btn">My Dashboard</a>
       </div>
-  </body>
+    </nav>
+  </header>
+
+  <div class="main-container">
+    <div class="form-card create-question-cont">
+      <h2>Add a Question<%= typeof quiz !== 'undefined' && quiz ? ' to "' + quiz.title + '"' : '' %></h2>
+
+      <% if (typeof existingQuestions !== 'undefined' && existingQuestions.length > 0) { %>
+        <p class="subtitle">Questions added so far: <strong><%= existingQuestions.length %></strong></p>
+      <% } %>
+
+      <form id="quiz-question" method="POST" action="/quiz/<%= quizId %>/questions">
+        <div class="form-group">
+          <label for="question-text">Question Prompt</label>
+          <input id="question-text" type="text" name="question" placeholder="Enter your question..." required />
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Next: Add Answer Choices</button>
+          <a href="/quiz/<%= quizId %>" class="btn secondary">Finish & View Quiz</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+
 </html>

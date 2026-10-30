@@ -1,23 +1,30 @@
-/*
- * All routes for Users are defined here
- * Since this file is loaded in server.js into api/users,
- *   these routes are mounted onto /users
- * See: https://expressjs.com/en/guide/using-middleware.html#middleware.router
- */
-
-const express = require('express');
-const router  = express.Router();
+const express = require("express");
+const router = express.Router();
 
 module.exports = (db) => {
-    router.get('/:user_id', (req, res) => {
-        req.session.user_id = req.params.user_id;
-        db.query(`
-        SELECT * FROM quizzes WHERE public = true;
-        `)
-        .then(data => {
-          const templateVar = {quizzes: data.rows, user_id: req.params.user_id};
-          res.render('../views/index', templateVar);
-        })
+  const renderHome = (req, res) => {
+    const userId = req.params.user_id || req.session.user_id || 1;
+    req.session.user_id = userId;
+    db.query(
+      `SELECT quizzes.*, users.username, COUNT(questions.id)::int AS question_count
+       FROM quizzes
+       JOIN users ON users.id = quizzes.owner_id
+       LEFT JOIN questions ON questions.quiz_id = quizzes.id
+       WHERE quizzes.public = true
+       GROUP BY quizzes.id, users.username
+       ORDER BY (COUNT(questions.id) > 0) DESC, quizzes.id DESC;`
+    )
+      .then((data) => {
+        const templateVar = { quizzes: data.rows, user_id: userId };
+        res.render("../views/index", templateVar);
+      })
+      .catch((err) => {
+        res.status(500).json({ error: err.message });
       });
-      return router;
-    };
+  };
+
+  router.get("/", renderHome);
+  router.get("/:user_id", renderHome);
+
+  return router;
+};
