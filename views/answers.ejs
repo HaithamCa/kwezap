@@ -18,10 +18,15 @@
 <body>
   <header class="site-header">
     <nav class="navbar">
-      <a href="/home/<%= typeof user_id !== 'undefined' ? user_id : 1 %>" class="brand">KWEZAP</a>
+      <a href="/" class="brand">KWEZAP</a>
       <div class="nav-links">
-        <a href="/quiz/<%= quiz_id %>" class="nav-btn">View Quiz</a>
-        <a href="/users/<%= typeof user_id !== 'undefined' ? user_id : 1 %>" class="nav-btn">My Dashboard</a>
+        <a href="/" class="nav-btn">Explore Quizzes</a>
+        <% if (currentUser) { %>
+          <a href="/users/<%= currentUser.id %>" class="nav-btn">My Dashboard</a>
+          <a href="/quiz/<%= quiz_id %>" class="nav-btn">View Quiz</a>
+        <% } else { %>
+          <a href="/auth/login" class="nav-btn">Login</a>
+        <% } %>
       </div>
     </nav>
   </header>

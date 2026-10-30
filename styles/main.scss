@@ -1,3 +1,41 @@
+.logout-btn {
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  padding: 0.45rem 0.85rem;
+}
+
+.auth-card {
+  max-width: 420px;
+  margin: 2rem auto;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 1.25rem;
+  color: #64748b;
+}
+
+.auth-footer a {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+.alert-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
 * {
   box-sizing: border-box;
 }

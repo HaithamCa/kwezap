@@ -18,11 +18,19 @@
 <body>
   <header class="site-header">
     <nav class="navbar">
-      <a href="/home/<%= user_id || 1 %>" class="brand">KWEZAP</a>
+      <a href="/home/<%= user_id || '' %>" class="brand">KWEZAP</a>
       <div class="nav-links">
-        <a href="/home/<%= user_id || 1 %>" class="nav-btn">Explore Quizzes</a>
-        <a href="/users/<%= user_id || 1 %>" class="nav-btn">My Dashboard</a>
-        <a href="/users/createquiz/<%= user_id || 1 %>" class="nav-btn primary">+ Create Quiz</a>
+        <a href="/" class="nav-btn">Explore Quizzes</a>
+        <% if (currentUser) { %>
+          <a href="/users/<%= currentUser.id %>" class="nav-btn">My Dashboard</a>
+          <a href="/users/createquiz/<%= currentUser.id %>" class="nav-btn primary">+ Create Quiz</a>
+          <form method="POST" action="/auth/logout" style="display: inline; margin: 0;">
+            <button type="submit" class="nav-btn logout-btn">Logout (<%= currentUser.username %>)</button>
+          </form>
+        <% } else { %>
+          <a href="/auth/login" class="nav-btn">Login</a>
+          <a href="/auth/register" class="nav-btn primary">Register</a>
+        <% } %>
       </div>
     </nav>
   </header>
