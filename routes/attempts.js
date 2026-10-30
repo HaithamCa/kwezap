@@ -5,7 +5,7 @@ module.exports = (db) => {
   // View a specific attempt result (shareable result link)
   router.get("/:attempt_id", async (req, res) => {
     const attemptId = req.params.attempt_id;
-    const userId = req.session.user_id || 1;
+    const userId = req.session.user_id || null;
     try {
       const attemptResult = await db.query(
         `SELECT previous_attempts.id AS attempt_id,

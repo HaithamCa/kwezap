@@ -5,7 +5,7 @@ module.exports = (db) => {
   // Display quiz page to take a quiz
   router.get("/:quiz_id", async (req, res) => {
     const quizId = req.params.quiz_id;
-    const userId = req.session.user_id || 1;
+    const userId = req.session.user_id || null;
     try {
       const quizResult = await db.query(
         `SELECT quizzes.*, users.username

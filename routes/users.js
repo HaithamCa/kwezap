@@ -5,7 +5,12 @@ module.exports = (db) => {
   // The user homepage where they can see their quizzes and attempts
   router.get("/:user_id", async (req, res) => {
     const userId = req.params.user_id;
-    req.session.user_id = userId;
+    
+    // Ensure user can only view their own dashboard
+    if (req.session.user_id !== parseInt(userId)) {
+      return res.redirect(`/users/${req.session.user_id}`);
+    }
+    
     try {
       const userResult = await db.query(
         `SELECT id, username, email FROM users WHERE id = $1;`,
@@ -48,13 +53,22 @@ module.exports = (db) => {
 
   // creating a quiz page
   router.get("/createquiz/:user_id", (req, res) => {
-    req.session.user_id = req.params.user_id;
+    // Ensure user can only create quiz for themselves
+    if (req.session.user_id !== parseInt(req.params.user_id)) {
+      return res.redirect(`/users/createquiz/${req.session.user_id}`);
+    }
+    
     let templateVar = { user_id: req.params.user_id, error: null };
     res.render("../views/create_quiz", templateVar);
   });
 
   // storing created quizzes into the database
   router.post("/:user_id/createquiz", (req, res) => {
+    // Ensure user can only create quiz for themselves
+    if (req.session.user_id !== parseInt(req.params.user_id)) {
+      return res.status(403).send("You don't have permission to create a quiz for another user");
+    }
+    
     const title = (req.body.title || req.body.name || "").trim();
     const description = (req.body.description || "").trim();
     const isPublic = req.body.public === "false" ? false : true;
@@ -80,31 +94,59 @@ module.exports = (db) => {
   });
 
   // toggle quiz public/private status
-  router.post("/:user_id/visibility/:quiz_id", (req, res) => {
-    db.query(
-      `UPDATE quizzes SET public = NOT public WHERE id = $1 AND owner_id = $2;`,
-      [req.params.quiz_id, req.params.user_id]
-    )
-      .then(() => {
-        res.redirect(`/users/${req.params.user_id}`);
-      })
-      .catch((err) => {
-        res.status(500).json({ error: err.message });
-      });
+  router.post("/:user_id/visibility/:quiz_id", async (req, res) => {
+    try {
+      // Verify ownership
+      const quiz = await db.query(
+        `SELECT owner_id FROM quizzes WHERE id = $1;`,
+        [req.params.quiz_id]
+      );
+      
+      if (quiz.rows.length === 0) {
+        return res.status(404).send("Quiz not found");
+      }
+      
+      if (quiz.rows[0].owner_id !== parseInt(req.params.user_id) || 
+          req.session.user_id !== parseInt(req.params.user_id)) {
+        return res.status(403).send("You don't have permission to modify this quiz");
+      }
+
+      await db.query(
+        `UPDATE quizzes SET public = NOT public WHERE id = $1 AND owner_id = $2;`,
+        [req.params.quiz_id, req.params.user_id]
+      );
+      res.redirect(`/users/${req.params.user_id}`);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
   // delete a quiz
-  router.post("/:user_id/delete/:quiz_id", (req, res) => {
-    db.query(`DELETE FROM quizzes WHERE id = $1 AND owner_id = $2;`, [
-      req.params.quiz_id,
-      req.params.user_id,
-    ])
-      .then(() => {
-        res.redirect(`/users/${req.params.user_id}`);
-      })
-      .catch((err) => {
-        res.status(500).json({ error: err.message });
-      });
+  router.post("/:user_id/delete/:quiz_id", async (req, res) => {
+    try {
+      // Verify ownership
+      const quiz = await db.query(
+        `SELECT owner_id FROM quizzes WHERE id = $1;`,
+        [req.params.quiz_id]
+      );
+      
+      if (quiz.rows.length === 0) {
+        return res.status(404).send("Quiz not found");
+      }
+      
+      if (quiz.rows[0].owner_id !== parseInt(req.params.user_id) || 
+          req.session.user_id !== parseInt(req.params.user_id)) {
+        return res.status(403).send("You don't have permission to delete this quiz");
+      }
+
+      await db.query(`DELETE FROM quizzes WHERE id = $1 AND owner_id = $2;`, [
+        req.params.quiz_id,
+        req.params.user_id,
+      ]);
+      res.redirect(`/users/${req.params.user_id}`);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
   return router;

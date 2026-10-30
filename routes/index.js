@@ -3,8 +3,10 @@ const router = express.Router();
 
 module.exports = (db) => {
   const renderHome = (req, res) => {
-    const userId = req.params.user_id || req.session.user_id || 1;
-    req.session.user_id = userId;
+    const userId = req.params.user_id || req.session.user_id || null;
+    if (userId) {
+      req.session.user_id = userId;
+    }
     db.query(
       `SELECT quizzes.*, users.username, COUNT(questions.id)::int AS question_count
        FROM quizzes
