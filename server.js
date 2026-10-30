@@ -38,7 +38,24 @@ app.use(
 
 app.use(express.static("public"));
 
+// Middleware to check authentication
+const requireAuth = (req, res, next) => {
+  if (!req.session.user_id) {
+    return res.redirect("/auth/login");
+  }
+  next();
+};
+
+// Make user info available to all views
+app.use((req, res, next) => {
+  res.locals.currentUser = req.session.user_id
+    ? { id: req.session.user_id, username: req.session.username }
+    : null;
+  next();
+});
+
 // Separated Routes for each Resource
+const authRoutes = require("./routes/auth");
 const homeRoutes = require("./routes/index");
 const usersRoutes = require("./routes/users");
 const quizRoutes = require("./routes/quizzes");
@@ -47,17 +64,17 @@ const attemptRoutes = require("./routes/attempts");
 const widgetsRoutes = require("./routes/widgets");
 
 // Mount all resource routes
+app.use("/auth", authRoutes(db));
 app.use("/home", homeRoutes(db));
-app.use("/users", usersRoutes(db));
+app.use("/users", requireAuth, usersRoutes(db));
 app.use("/quiz", quizRoutes(db));
-app.use("/questions", questionRoutes(db));
+app.use("/questions", requireAuth, questionRoutes(db));
 app.use("/attempts", attemptRoutes(db));
 app.use("/widgets", widgetsRoutes(db));
 
 // Home page
 app.get("/", (req, res) => {
-  const userId = req.session.user_id || 1;
-  req.session.user_id = userId;
+  const userId = req.session.user_id || null;
   db.query(
     `SELECT quizzes.*, users.username, COUNT(questions.id)::int AS question_count
      FROM quizzes

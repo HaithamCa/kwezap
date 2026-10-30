@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KWEZAP — Login</title>
+
+  <link rel="stylesheet" href="/vendor/normalize-4.1.1.css" type="text/css" />
+  <link rel="stylesheet" href="/vendor/border-box.css" type="text/css" />
+  <link rel="stylesheet" href="/styles/main.css" type="text/css" />
+  <link rel="stylesheet" href="/styles/layout.css" type="text/css" />
+
+  <script type="text/javascript" src="/vendor/jquery-3.0.0.js"></script>
+  <script type="text/javascript" src="/scripts/app.js"></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="/" class="brand">KWEZAP</a>
+      <div class="nav-links">
+        <a href="/" class="nav-btn">Explore Quizzes</a>
+        <a href="/auth/register" class="nav-btn">Register</a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="main-container">
+    <div class="form-card auth-card">
+      <h1>Login to KWEZAP</h1>
+      <p class="subtitle">Access your quizzes and create new ones</p>
+      
+      <% if (error) { %>
+        <div class="alert-error"><%= error %></div>
+      <% } %>
+
+      <form method="POST" action="/auth/login">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" type="email" name="email" placeholder="you@example.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" type="password" name="password" placeholder="••••••••" required />
+        </div>
+
+        <button type="submit" class="btn primary full-width">Login</button>
+      </form>
+
+      <p class="auth-footer">
+        Don't have an account? <a href="/auth/register">Register here</a>
+      </p>
+    </div>
+  </div>
+</body>
+
+</html>
