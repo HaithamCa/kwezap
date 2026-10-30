@@ -2,7 +2,9 @@
 <html lang="en">
 
 <head>
-  <title>Home Page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KWEZAP — <%= quiz.title %></title>
 
   <link rel="stylesheet" href="/vendor/normalize-4.1.1.css" type="text/css" />
   <link rel="stylesheet" href="/vendor/border-box.css" type="text/css" />
@@ -13,31 +15,59 @@
 </head>
 
 <body>
-  
-    <div class="main-container">
-      <div class="quiz-inprog-cont">
-        <h1><%= quizzes[0].username %></h1>
-        <h2><%= quizzes[0].title %></h2>
-        <h3>All Questions</h3>
-        <div>
-          <% let questionText = ''; %>
-          <% for (let object of quizzes) { %>
-          <% if (object.question === questionText) { %>
-          <li><%= object.answer %></li>
-          <br>
-          <% } else {  %>
-          <% questionText = object.question %>
-          <h4><%= questionText %></h4>
-          <br>
-          <li><%= object.answer %></li>
-          <br>
-          <% } %>
-          <% } %>
-          <br>
-        </div>
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="/home/<%= user_id %>" class="brand">KWEZAP</a>
+      <div class="nav-links">
+        <a href="/home/<%= user_id %>" class="nav-btn">Explore Quizzes</a>
+        <a href="/users/<%= user_id %>" class="nav-btn">My Dashboard</a>
+        <a href="/users/createquiz/<%= user_id %>" class="nav-btn primary">+ Create Quiz</a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="main-container">
+    <div class="hero-card">
+      <div class="quiz-meta">
+        <span class="badge <%= quiz.public ? 'badge-public' : 'badge-private' %>">
+          <%= quiz.public ? 'Public Quiz' : 'Private Quiz' %>
+        </span>
+        <span class="author">Created by @<%= quiz.username %></span>
+      </div>
+      <h1><%= quiz.title %></h1>
+      <p class="subtitle"><%= quiz.description %></p>
+      <div class="quiz-card-actions">
+        <button type="button" class="btn secondary copy-link-btn" data-url="/quiz/<%= quiz.id %>">Share Quiz Link</button>
+        <a href="/quiz/<%= quiz.id %>/questions" class="btn secondary">+ Add Question</a>
       </div>
     </div>
-  </body>
 
+    <% if (questions && questions.length > 0) { %>
+      <form method="POST" action="/quiz/<%= quiz.id %>/submit" class="quiz-attempt-form">
+        <% questions.forEach(function(q, index) { %>
+          <div class="question-card">
+            <h3>Question <%= index + 1 %> of <%= questions.length %></h3>
+            <p class="question-prompt"><%= q.question %></p>
+            <div class="options-list">
+              <% q.answers.forEach(function(ans) { %>
+                <label class="option-item">
+                  <input type="radio" name="question_<%= q.id %>" value="<%= ans.id %>" required />
+                  <span><%= ans.answer %></span>
+                </label>
+              <% }); %>
+            </div>
+          </div>
+        <% }); %>
+
+        <button type="submit" class="btn primary full-width submit-quiz-btn">Submit Quiz & See Results</button>
+      </form>
+    <% } else { %>
+      <div class="empty-state">
+        <p>This quiz doesn't have any questions yet.</p>
+        <a href="/quiz/<%= quiz.id %>/questions" class="btn primary">+ Add First Question</a>
+      </div>
+    <% } %>
+  </div>
+</body>
 
 </html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KWEZAP — Quiz Result</title>
+
+  <link rel="stylesheet" href="/vendor/normalize-4.1.1.css" type="text/css" />
+  <link rel="stylesheet" href="/vendor/border-box.css" type="text/css" />
+  <link rel="stylesheet" href="/styles/main.css" type="text/css" />
+  <link rel="stylesheet" href="/styles/layout.css" type="text/css" />
+  <script type="text/javascript" src="/vendor/jquery-3.0.0.js"></script>
+  <script type="text/javascript" src="/scripts/app.js"></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="/home/<%= user_id %>" class="brand">KWEZAP</a>
+      <div class="nav-links">
+        <a href="/home/<%= user_id %>" class="nav-btn">Explore Quizzes</a>
+        <a href="/users/<%= user_id %>" class="nav-btn">My Dashboard</a>
+        <a href="/users/createquiz/<%= user_id %>" class="nav-btn primary">+ Create Quiz</a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="main-container">
+    <div class="result-banner">
+      <span class="badge badge-score">Attempt #<%= attempt.attempt_id %></span>
+      <h1><%= attempt.quiz_title %></h1>
+      <p class="subtitle">Completed by <strong>@<%= attempt.taker_username %></strong> (Quiz by @<%= attempt.owner_username %>)</p>
+
+      <% const total = attempt.total_questions || questions.length || 1; %>
+      <% const pct = Math.round((attempt.score / total) * 100); %>
+      <div class="score-circle">
+        <div class="score-number"><%= attempt.score %> / <%= total %></div>
+        <div class="score-percent"><%= pct %>% Correct</div>
+      </div>
+
+      <div class="quiz-card-actions center-actions">
+        <button type="button" class="btn primary copy-link-btn" data-url="/attempts/<%= attempt.attempt_id %>">Share Result Link</button>
+        <a href="/quiz/<%= attempt.quiz_id %>" class="btn secondary">Retake Quiz</a>
+        <a href="/home/<%= user_id %>" class="btn secondary">Back to Home</a>
+      </div>
+    </div>
+
+    <h2 class="section-title">Answer Key</h2>
+    <div class="links-container">
+      <% questions.forEach(function(q, index) { %>
+        <div class="question-card">
+          <h3>Question <%= index + 1 %></h3>
+          <p class="question-prompt"><%= q.question %></p>
+          <p class="correct-answer-label">Correct Answer: <strong><%= q.correct_answer || 'N/A' %></strong></p>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</body>
+
+</html>
